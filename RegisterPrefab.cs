@@ -14,19 +14,6 @@
                 }
             }
         }
-        
-        public static void VB_AddCreature(string bundleName, params string[] prefabNames)
-        {
-            foreach (var name in prefabNames)
-            {
-                var prefab = AssetBundleGet.LoadPrefabFromBundles<GameObject>(bundleName, name);
-                if (prefab)
-                {
-                    CreatureManager.Instance.AddCreature(new CustomCreature(prefab, fixReference: true, new CreatureConfig { }));
-                    ShaderFix.Replace(prefab);
-                }
-            }
-        }
 
         public static void VB_AddItem(string bundleName, params string[] prefabNames)
         {
@@ -66,6 +53,32 @@
 
                 ItemManager.Instance.AddItem(new CustomItem(prefab, fixReference: true, config));
                 ShaderFix.Replace(prefab);
+            }
+        }
+        
+        public static void VB_AddCreature(string bundleName, params string[] prefabNames)
+        {
+            foreach (var name in prefabNames)
+            {
+                var prefab = AssetBundleGet.LoadPrefabFromBundles<GameObject>(bundleName, name);
+                if (prefab)
+                {
+                    CreatureManager.Instance.AddCreature(new CustomCreature(prefab, fixReference: true, new CreatureConfig { }));
+                    ShaderFix.Replace(prefab);
+                }
+            }
+        }
+        
+        public static void VB_AddCreatureWithConfig(string bundleName, params (string prefabName, CreatureConfig config)[] creatures)
+        {
+            foreach (var creature in creatures)
+            {
+                var prefab = AssetBundleGet.LoadPrefabFromBundles<GameObject>(bundleName, creature.prefabName);
+                if (prefab)
+                {
+                    CreatureManager.Instance.AddCreature(new CustomCreature(prefab, fixReference: true, creature.config));
+                    ShaderFix.Replace(prefab);
+                }
             }
         }
 
