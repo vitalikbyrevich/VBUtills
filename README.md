@@ -1,3 +1,5 @@
+<details>
+<summary><b>🇷🇺 Русская версия (нажмите чтобы развернуть)</b></summary>
 # VBUtils - Утилиты для моддинга Valheim с Jotunn
 
 Набор утилит для упрощения создания модов для Valheim с использованием библиотеки Jotunn. Позволяет сократить объем кода до 10 раз, делая регистрацию объектов более лаконичной и удобной.
@@ -181,3 +183,191 @@ public static void PatchZNetScene()
 ---
 
 С помощью VBUtils вы можете сосредоточиться на создании контента, а не на написании шаблонного кода для регистрации объектов в Valheim!
+</details>
+
+<details>
+<summary><b>🇺🇸 English Version (click to expand)</b></summary>
+# VBUtils - Utilities for Valheim Modding with Jotunn
+
+A set of utilities for simplifying Valheim mod creation using the Jotunn library. Allows reducing code volume up to 10 times, making object registration more concise and convenient.
+
+## 📦 Usage
+
+1. Ensure dependencies are included:
+   - BepInEx
+   - Jotunn
+   - VBUtils
+2. Install ILRepack via NuGet: `<PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />`
+3. Add VBUtils.dll to a new "Libs" folder - Right Click - Properties - "Content" = "Copy Always"
+4. Create an ILRepack.targets file in the project root:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Target Name="ILRepacker" AfterTargets="Build">
+        <ItemGroup>
+            <InputAssemblies Include="$(TargetPath)" />
+            <InputAssemblies Include="$(OutputPath)\Libs\VBUtils.dll" />
+        </ItemGroup>
+        <ILRepack Parallel="true" DebugInfo="true" Internalize="true" InputAssemblies="@(InputAssemblies)" OutputFile="$(TargetPath)" TargetKind="SameAsPrimaryAssembly" LibraryPath="$(OutputPath)" />
+    </Target>
+</Project>
+```
+
+## 🚀 Features
+
+### 📁 Object Registration
+- **`VB_AddPrefab`** - Prefab registration (effects, static objects)
+- **`VB_AddItem`** - Item registration without recipes
+- **`VB_AddItemRecipe`** - Item registration with crafting recipes
+- **`VB_AddCreatureWithConfig`** - Creature registration with drop and spawn configuration
+- **`VB_AddSE`** - Status effect registration
+- **`VB_AddPiece`** - Building piece registration
+
+### 🔧 Component Patches
+- **`Replace`** - Copy component fields between objects
+- **`AddEffect`** - Add specific effects to components
+- **`ReplaceAnimator`** - Copy animator from donor
+- **`ReplaceFoot`** - Copy footstep effects from donor
+
+### ✨ Automatic Improvements
+- **Automatic shader fixing** - Built into all registration methods
+- **Simplified AssetBundle handling** - Unified method for loading from resources
+
+## 📋 Usage Examples
+
+### Main Registration
+```csharp
+public static void Initialize()
+{
+    // Item registration
+    RegisterPrefab.VB_AddPrefab("my_bundle", "sfx_build_hammer_wood", "vfx_Place_wood");
+    RegisterPrefab.VB_AddItem("my_bundle", "Meat", "RawMeat");
+    
+    // Registration with recipes
+    RegisterPrefab.VB_AddItemRecipe("my_bundle", 
+        ("dual_axe_bronze", 1, new[] { 
+            ("Bronze", 20, 10, true), 
+            ("RoundLog", 2, 0, true) 
+        }, CraftingStations.Forge, 1)
+    );
+    
+    // Building piece registration
+    RegisterPrefab.VB_AddPiece("my_bundle", PieceTables.Hammer, 
+        PieceCategories.Building, CraftingStations.Workbench,
+        ("roof", new[] { ("Resin", 2, true), ("Wood", 2, true) })
+    );
+    
+    // Creature registration
+    RegisterPrefab.VB_AddCreatureWithConfig("my_bundle", 
+        ("MyCreature", new CreatureConfig
+        {
+            DropConfigs = new DropConfig[]
+            {
+                new DropConfig { 
+                    Item = "TrophyCultist", 
+                    MinAmount = 1, 
+                    MaxAmount = 1, 
+                    Chance = 10 
+                }
+            },
+            SpawnConfigs = new SpawnConfig[]
+            {
+                new SpawnConfig
+                {
+                    Biome = Heightmap.Biome.Meadows,
+                    SpawnChance = 20,
+                    MaxSpawned = 2
+                }
+            }
+        })
+    );
+    
+    // Status effect registration
+    RegisterPrefab.VB_AddSE("my_bundle", "SE_Debuff_1", "SE_Debuff_2");
+}
+```
+
+### Component Patches
+```csharp
+[HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
+[HarmonyPostfix]
+public static void PatchZNetScene()
+{
+    // Animation copying
+    ComponentPatch.ReplaceAnimator("MyCustomMob", "Ulv");
+    
+    // Effect copying
+    ComponentPatch.Replace<Humanoid>("MyCustomMob", "Ulv", (custom, vanilla) =>
+    {
+        custom.m_hitEffects.m_effectPrefabs = vanilla.m_hitEffects.m_effectPrefabs;
+        custom.m_critHitEffects.m_effectPrefabs = vanilla.m_critHitEffects.m_effectPrefabs;
+    });
+    
+    // Specific effect addition
+    ComponentPatch.AddEffect<Humanoid>("MyCustomMob", "sfx_death", h => h.m_deathEffects);
+    
+    // Footstep effect copying
+    ComponentPatch.ReplaceFoot("MyCustomMob", "Fenring_Cultist");
+}
+```
+
+## 📝 Features
+
+### Automatic Shader Fixing
+All registration methods automatically apply shader fixes via `ShaderFix.Replace()`. Manual calls are not required.
+
+### Simplified AssetBundle Handling
+- Unified method `AssetBundleGet.LoadPrefabFromBundles()` for loading from any bundle
+- Automatic caching of loaded bundles
+- Loading error logging
+
+### Flexible Creature Registration
+The `VB_AddCreatureWithConfig` method supports:
+- Creatures without drops or spawns (empty `CreatureConfig`)
+- Drops only or spawns only
+- Multiple spawn configurations for one creature
+- Registration of multiple creatures in one call
+
+## 🐛 Debugging
+
+Utilities automatically log key events:
+- Successful AssetBundle loading
+- Prefab loading errors
+- Shader application
+
+To view logs, use the BepInEx console or the `BepInEx/LogOutput.log` file.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a branch for your feature (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+Distributed under the MIT License. See the LICENSE file for details.
+
+---
+
+## 💡 Tips
+
+1. **Use constants** for bundle and prefab names to avoid typos
+2. **Group registrations** by object type for better readability
+3. **Test mods** on a dedicated server before publishing
+4. **Use empty arrays** instead of `null` for configurations
+
+## 🆘 Support
+
+If you encounter issues:
+1. Check BepInEx logs for errors
+2. Verify prefab names in the AssetBundle are correct
+3. Check Jotunn version compatibility
+4. Create an issue in the repository with a detailed problem description
+
+---
+
+With VBUtils, you can focus on creating content instead of writing boilerplate code for object registration in Valheim!
+</details>
