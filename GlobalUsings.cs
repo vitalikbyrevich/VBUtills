@@ -1,0 +1,15 @@
+﻿global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Reflection;
+global using BepInEx;
+global using HarmonyLib;
+global using UnityEngine;
+global using System.Runtime.InteropServices;
+global using Jotunn.Managers;
+global using Jotunn.Utils;
+global using Jotunn.Entities;
+global using Jotunn.Configs;
+global using System.Linq.Expressions;
+global using static FootStep;
+global using BepInEx.Logging;
