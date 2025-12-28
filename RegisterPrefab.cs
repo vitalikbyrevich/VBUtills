@@ -56,7 +56,7 @@
             }
         }
         
-        public static void VB_AddCreature(string bundleName, params string[] prefabNames)
+      /*  public static void VB_AddCreature(string bundleName, params string[] prefabNames)
         {
             foreach (var name in prefabNames)
             {
@@ -67,7 +67,7 @@
                     ShaderFix.Replace(prefab);
                 }
             }
-        }
+        }*/
         
         public static void VB_AddCreatureWithConfig(string bundleName, params (string prefabName, CreatureConfig config)[] creatures)
         {
